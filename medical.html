@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Կամավոր առողջության ապահովագրության հաշվիչ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Armenia:wght@300;400;500;600;700&display=swap');
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--blue:#0041FF;--blue-dark:#0030CC;--blue-light:#3372FF;--mint:#EEF3FF;--cream:#F6F8FF;--charcoal:#0D1440;--slate:#4056A1;--border:#C5D0F5;--gold:#C99B3A;--gold-light:#FBF3E0}
+  body{font-family:'Noto Sans Armenia',sans-serif;color:var(--charcoal);min-height:100vh;
+    background:url('images/medical-image-1-ce5edf2dc95a.jpg') center center/cover fixed no-repeat;position:relative}
+  body::before{content:'';position:fixed;inset:0;background:rgba(6,18,80,0.45);z-index:0}
+  header{background:transparent;backdrop-filter:none;color:#fff;
+    padding:28px 50px 24px 24px;display:flex;flex-direction:column;align-items:flex-end;
+    position:relative;z-index:2;overflow:hidden}
+  header::before{content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse at 80% 50%,rgba(0,191,255,.18) 0%,transparent 65%);
+    pointer-events:none}
+  header .lw{width:min(420px,80vw);height:auto;margin-bottom:16px;position:relative;z-index:1}
+  header .lw img{width:100%;height:auto;display:block;filter:none}
+  header h1{font-size:clamp(17px,3.5vw,26px);font-weight:700;position:relative;z-index:1;text-align:right}
+  header p{margin-top:6px;font-size:13px;color:rgba(255,255,255,.65);position:relative;z-index:1;text-align:right}
+  .container{max-width:960px;margin:0 32px 0 auto;padding:28px 18px 60px;position:relative;z-index:1}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:620px){.grid{grid-template-columns:1fr}
+    header{align-items:center;padding:24px 18px 18px}
+    header h1,header p{text-align:center}
+  }
+  .card{background:rgba(255,255,255,0.88);backdrop-filter:blur(14px);
+    border:1.5px solid rgba(197,208,245,0.7);border-radius:14px;padding:22px}
+  .card-full{grid-column:1/-1}
+  .card-label{font-size:10.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;
+    color:var(--blue);margin-bottom:14px}
+  .pills{display:flex;gap:10px;flex-wrap:wrap}
+  .pill{flex:1;min-width:110px;padding:14px 10px;border:2px solid var(--border);
+    border-radius:12px;background:rgba(246,248,255,0.9);text-align:center;
+    cursor:pointer;transition:all .18s;position:relative}
+  .pill .pn{display:block;font-size:14px;font-weight:700;color:var(--charcoal)}
+  .pill .ps{display:block;font-size:11px;color:var(--slate);margin-top:4px}
+  .pill:hover{border-color:var(--blue-light);background:var(--mint)}
+  .pill.active{border-color:var(--blue);background:var(--mint)}
+  .pill.active .pn{color:var(--blue)}
+  .pill.active::after{content:'✓';position:absolute;top:7px;right:10px;font-size:11px;color:var(--blue)}
+  .pill-smart{background:#009DFF;border-color:#009DFF}
+  .pill-smart .pn{color:#fff}
+  .pill-smart .ps{color:rgba(255,255,255,.75)}
+  .pill-smart:hover{background:#0085DD;border-color:#0085DD}
+  .pill-smart.active{background:#0041FF;border-color:#0041FF}
+  .pill-smart.active .pn{color:#fff}
+  .pill-smart.active::after{color:#fff}
+  .field{margin-bottom:4px}
+  .field label{display:block;font-size:13px;font-weight:600;color:#009DFF;margin-bottom:7px}
+  .field input[type="number"],.field select{width:100%;padding:11px 14px;
+    border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:14px;
+    color:var(--charcoal);background:rgba(246,248,255,0.95);
+    appearance:none;-webkit-appearance:none;transition:border-color .15s}
+  .sw{position:relative}
+  .sw::after{content:'▾';position:absolute;right:13px;top:50%;
+    transform:translateY(-50%);color:var(--blue);pointer-events:none}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--blue-light);
+    box-shadow:0 0 0 3px rgba(0,65,255,.12)}
+  .hint{font-size:11px;color:var(--slate);margin-top:4px}
+  .rrow{display:flex;gap:10px;margin-top:6px}
+  .rbtn{flex:1;padding:9px 6px;border:1.5px solid var(--border);border-radius:8px;
+    background:rgba(246,248,255,0.95);text-align:center;cursor:pointer;
+    font-size:13px;font-weight:600;color:#009DFF;transition:all .15s}
+  .rbtn.active{border-color:var(--blue);background:var(--mint);color:var(--blue)}
+  .rc{background:linear-gradient(135deg,#0041FF 0%,#003ACC 100%);border-radius:14px;
+    padding:28px 26px;color:#fff;position:relative;overflow:hidden}
+  .rc::before{content:'';position:absolute;width:240px;height:240px;border-radius:50%;
+    background:rgba(255,255,255,.06);top:-70px;right:-50px}
+  .rcl{font-size:10.5px;letter-spacing:2px;text-transform:uppercase;
+    color:rgba(255,255,255,.6);font-weight:600;margin-bottom:5px}
+  .rcm{font-size:clamp(26px,4.5vw,40px);font-weight:700;line-height:1.1}
+  .rcs{font-size:13px;color:rgba(255,255,255,.55);margin-top:3px}
+  .rct{margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.15);
+    display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px}
+  .tl{font-size:11.5px;color:rgba(255,255,255,.6);margin-bottom:3px}
+  .tv{font-size:19px;font-weight:700}
+  .ce{display:flex;align-items:center;gap:8px;margin-top:4px}
+  .ce input{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);
+    border-radius:6px;color:#fff;font-family:inherit;font-size:17px;font-weight:700;
+    width:160px;padding:4px 8px;text-align:right}
+  .ce input:focus{outline:none;border-color:rgba(255,255,255,.7)}
+  .ce span,.cfmt{font-size:13px;color:rgba(255,255,255,.6)}
+  .cfmt{margin-top:3px;font-size:11px}
+  .istrip{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+  .ichip{background:var(--mint);border:1px solid var(--border);border-radius:8px;
+    padding:7px 12px;font-size:12px;color:var(--blue);font-weight:500}
+  .ichip span{font-weight:700}
+  .note{margin-top:16px;padding:12px 14px;background:var(--gold-light);
+    border-left:3px solid var(--gold);border-radius:6px;font-size:12px;
+    color:#7A5C1A;line-height:1.55}
+  .err{color:#C0392B;font-size:12px;margin-top:5px}
+  .hidden{display:none}
+
+  @media(max-width:900px){.container{margin:0 auto}}
+</style>
+</head>
+<body>
+<header>
+  <div class="lw"><img src="images/travel-image-2-423120db77e2.png" alt="Sil Insurance"></div>
+  <h1>ԱՌՈՂՋՈՒԹՅԱՆ ԱՊԱՀՈՎԱԳՐՈՒԹՅՈՒՆ</h1>
+  <p>Ապահովագրավճարի հաշվիչ</p>
+</header>
+<div class="container"><div class="grid">
+
+  <div class="card card-full">
+    <div class="card-label">Ապահովագրության ծրագիր</div>
+    <div class="pills">
+      <div class="pill active" data-plan="2" onclick="selectPlan(2)">
+        <span class="pn">Standart</span><span class="ps">4 000 000 ֏</span></div>
+      <div class="pill" data-plan="3" onclick="selectPlan(3)">
+        <span class="pn">Premium</span><span class="ps">6 000 000 ֏</span></div>
+      <div class="pill pill-smart" data-plan="4" onclick="selectPlan(4)">
+        <span class="pn">Standart Smart</span><span class="ps">4 000 000 ֏</span></div>
+      <div class="pill pill-smart" data-plan="5" onclick="selectPlan(5)">
+        <span class="pn">Premium Smart</span><span class="ps">6 000 000 ֏</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Անձանց քանակ</div>
+    <div class="field"><label>Աշխատակից</label>
+      <input type="number" id="personCount" min="5" value="100" oninput="calc()">
+      <div class="hint" id="groupHint">Խումբ: 81–120 Անձ</div>
+    </div>
+    <div class="field" style="margin-top:14px"><label>0–17 տարեկան (երեխաններ)</label>
+      <input type="number" id="childCount" min="0" value="0" oninput="calc()">
+      <div class="err hidden" id="childError">Երեխանների թիվը գերազանցում է աշխատակիցների քանակին</div>
+    </div>
+    <div class="field" style="margin-top:14px"><label>Վճարող</label>
+      <div class="rrow">
+        <div class="rbtn active" data-pt="org" onclick="sPT('org')">Կազմակերպություն</div>
+        <div class="rbtn" data-pt="emp" onclick="sPT('emp')">Աշխատակից</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Պայմաններ</div>
+    <div class="field"><label>Անձանց միջին տարիք</label>
+      <input type="number" id="ageInput" min="0" max="70" value="30" oninput="calc()">
+      <div class="hint" id="ageHint">Խումբ: 18–45 տարեկան</div>
+    </div>
+    <div class="field" style="margin-top:14px"><label>Ոլորտ*</label>
+      <div class="sw"><select id="riskType" onchange="calc()">
+        <option value="1">Ոչ ռիսկային</option>
+        <option value="2">Ռիսկային</option>
+      </select></div>
+    </div>
+    <div class="field" style="margin-top:14px"><label>Վճարման գրաֆիկ*</label>
+      <div class="sw"><select id="paySchedule" onchange="calc()">
+        <option value="1">Միանվագ</option>
+        <option value="2">Կիսամյակային</option>
+        <option value="3">Եռամսյակային</option>
+        <option value="4">Ամսական</option>
+      </select></div>
+    </div>
+  </div>
+
+  <div class="card card-full">
+    <div class="rc">
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-end">
+        <div style="flex:1;min-width:160px">
+          <div class="rcl">Ապահովագրավճար (1 Անձ / տարի)</div>
+          <div class="rcm" id="r1">—</div>
+          <div class="rcs">ՀՀ դրամ</div>
+        </div>
+        <div id="childCol" class="hidden" style="flex:1;min-width:160px;padding-left:24px;border-left:1px solid rgba(255,255,255,.2)">
+          <div class="rcl">Երեխայի Ապահովագրավճար (1 Անձ / տարի)</div>
+          <div class="rcm" id="r2" style="font-size:clamp(22px,3.5vw,32px)">—</div>
+          <div class="rcs">ՀՀ դրամ</div>
+        </div>
+      </div>
+      <div class="rct">
+        <div><div class="tl">Ընդհանուր Ապահովագրավճար</div><div class="tv" id="rTot">—</div></div>
+        <div>
+          <div class="tl">Ապահովագրական գումար</div>
+          <div class="ce">
+            <input type="number" id="coverInput" value="4000000" step="100000" oninput="fmtCover();calc()">
+            <span>֏</span>
+          </div>
+          <div class="cfmt" id="coverFmt">4 000 000 ֏</div>
+        </div>
+      </div>
+    </div>
+    <div class="istrip" id="istrip"></div>
+    <div class="note">* Ոլորտի՝ աշխատանքի բնույթի, ռիսկայնությունը գնահատվում է ապահովագրական ընկերության կողմից.<br>* Վճարումն իրականացվում է ժամանակահատվածի սկզբում.</div>
+  </div>
+
+</div></div>
+<script>
+const PD={
+  2:{n:'Standart',dc:4000000,sb:null,g:[143000,131000,120000,110000,101000,93000,85000,78000,72000,66000,61000,56000,51000,47000]},
+  3:{n:'Premium', dc:6000000,sb:null,g:[178000,162000,147000,134000,122000,111000,101000,92000,84000,76000,69000,63000,57000,52000]},
+  4:{n:'Standart Smart',dc:4000000,sb:2,g:null},
+  5:{n:'Premium Smart', dc:6000000,sb:3,g:null}
+};
+const GR=[[5,30],[31,50],[51,80],[81,120],[121,170],[171,250],[251,400],[401,650],[651,900],[901,1500],[1501,2500],[2501,4000],[4001,6500],[6501,1e9]];
+const GL=['–'.repeat(0)+'5–30','31–50','51–80','81–120','121–170','171–250','251–400','401–650','651–900','901–1500','1501–2500','2501–4000','4001–6500','6501+'];
+const AR=[[0,17],[18,45],[46,60],[61,70]],AL=['0–17','18–45','46–60','61–70'],AC=[0.4,1.0,1.4,1.6];
+const RC={1:1.0,2:1.1},PC={1:1.0,2:1.025,3:1.05,4:1.075};
+const OPS=0.30,CC=0.7,PTC={org:1.0,emp:1.1};
+let SP=2,PT='org';
+function selectPlan(p){SP=p;document.querySelectorAll('.pill').forEach(e=>e.classList.remove('active'));document.querySelector('.pill[data-plan="'+p+'"]').classList.add('active');document.getElementById('coverInput').value=PD[p].dc;fmtCover();calc();}
+function sPT(t){PT=t;document.querySelectorAll('.rbtn').forEach(e=>e.classList.remove('active'));document.querySelector('.rbtn[data-pt="'+t+'"]').classList.add('active');calc();}
+function gi(n){for(let i=0;i<GR.length;i++)if(n>=GR[i][0]&&n<=GR[i][1])return i;return GR.length-1;}
+function ai(a){for(let i=0;i<AR.length;i++)if(a>=AR[i][0]&&a<=AR[i][1])return i;return AR.length-1;}
+function r1k(n){return Math.round(n/1000)*1000;}
+function fmt(n){return Math.round(n).toLocaleString('hy-AM')+' ֏';}
+function fmtCover(){const v=parseFloat(document.getElementById('coverInput').value)||0;document.getElementById('coverFmt').textContent=Math.round(v).toLocaleString('hy-AM')+' ֏';}
+function base(pk,g,a,ri,pi){return PD[pk].g[g]/(1-OPS)*AC[a]*RC[ri]*PC[pi];}
+function calc(){
+  const n=parseInt(document.getElementById('personCount').value)||0;
+  const c=parseInt(document.getElementById('childCount').value)||0;
+  const age=parseInt(document.getElementById('ageInput').value)||0;
+  const ri=parseInt(document.getElementById('riskType').value);
+  const pi=parseInt(document.getElementById('paySchedule').value);
+  const ce=document.getElementById('childError');
+  if(c>n){ce.classList.remove('hidden');return;}ce.classList.add('hidden');
+  const g=gi(n),a=ai(age),ptc=PTC[PT];
+  document.getElementById('groupHint').textContent='Խումբ: '+GL[g]+' Աշխատակից';
+  document.getElementById('ageHint').textContent='Խումբ: '+AL[a]+' տարեկան';
+  let raw=PD[SP].sb?base(PD[SP].sb,g,a,ri,pi)*0.8:base(SP,g,a,ri,pi);
+  const ar=raw*ptc,cr=ar*CC;
+  const pp=r1k(ar),cp=r1k(cr),tot=r1k(Math.max(0,n-c)*ar+c*cr);
+  document.getElementById('r1').textContent=fmt(pp);
+  document.getElementById('rTot').textContent=fmt(tot);
+  const cc2=document.getElementById('childCol');
+  if(c>0){cc2.classList.remove('hidden');document.getElementById('r2').textContent=fmt(cp);}
+  else cc2.classList.add('hidden');
+  const rl=ri==1?'Ոչ ռիսկային':'Ռիսկային';
+  const pl={1:'Միանվագ',2:'Կիսամյակային',3:'Եռամսյակային',4:'Ամսական'};
+  const ptl=PT==='org'?'Կազմակերպություն':'Աշխատակից';
+  document.getElementById('istrip').innerHTML=
+    '<div class="ichip">Ծրագիր: <span>'+PD[SP].n+'</span></div>'+
+    '<div class="ichip">Աշխատակից: <span>'+n+'</span></div>'+
+    '<div class="ichip">Տարիք: <span>'+AL[a]+'</span></div>'+
+    '<div class="ichip">Ոլորտ: <span>'+rl+'</span></div>'+
+    '<div class="ichip">Վճարման գրաֆիկ: <span>'+pl[pi]+'</span></div>'+
+    '<div class="ichip">Վճարող: <span>'+ptl+'</span></div>'+
+    (c>0?'<div class="ichip">երեխաններ: <span>'+c+' հոգի</span></div>':'');
+}
+calc();
+</script>
+</body></html>
