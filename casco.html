@@ -515,7 +515,7 @@
     <div class="grid">
       <div class="field full">
         <label>Ապահովագրական գումար (AMD)</label>
-        <input type="number" id="insuredAmount" value="20000000" min="100000" step="100000">
+        <input type="number" id="insuredAmount" value="20 000 000" min="100000" step="100000">
       </div>
       <div class="field">
         <label>Ապահովադրի տեսակ</label>
@@ -781,7 +781,7 @@ function fmtPct2(n) {
 }
 
 function calculate() {
-  const amount     = parseFloat(document.getElementById('insuredAmount').value) || 0;
+  const amount     = parseFloat(document.getElementById('insuredAmount').value.replace(/\s/g,'')) || 0;
   const client     = document.getElementById('clientType').value;
   const carYear    = document.getElementById('carYear').value;
   const warranty   = document.getElementById('warranty').value;
@@ -881,6 +881,20 @@ function calculate() {
   document.getElementById('resultCard').scrollIntoView({behavior:'smooth',block:'nearest'});
   document.getElementById('rPremium').textContent   = fmt(premium) + ' ֏';
 }
+
+
+function formatAmountInput(el){
+  let digits=el.value.replace(/\D/g,'');
+  if(!digits){el.value='';return;}
+  el.value=digits.replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+}
+document.addEventListener('DOMContentLoaded',()=>{
+ const amt=document.getElementById('insuredAmount');
+ if(amt){
+   formatAmountInput(amt);
+   amt.addEventListener('input',()=>formatAmountInput(amt));
+ }
+});
 
 // Run once on load with default values
 window.addEventListener('DOMContentLoaded', calculate);
