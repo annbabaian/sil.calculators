@@ -301,8 +301,8 @@
 
   /* Travel calculator inspired visual style */
   :root{
-    --accent:#3137fd;
-    --accent2:#3137fd;
+    --accent:#0041FF;
+    --accent2:#0041FF;
     --text:#14151f;
     --muted:#6b7280;
     --border:#e5e7eb;
@@ -328,12 +328,12 @@
   .container{max-width:900px;margin:0 auto;}
 
   header{
-    min-height:220px;
-    margin-bottom:18px;
+    min-height:72px;
+    margin-bottom:8px;
     display:flex;
     flex-direction:column;
     align-items:flex-start;
-    justify-content:center;
+    justify-content:flex-end;
     text-align:left;
   }
 
@@ -399,6 +399,7 @@
   }
 
   input[type="number"],
+  input[type="text"],
   select{
     width:100%;
     padding:13px 12px;
@@ -410,6 +411,7 @@
   }
 
   input[type="number"]:focus,
+  input[type="text"]:focus,
   select:focus{
     outline:2px solid rgba(49,55,253,.18);
     border-color:var(--accent);
@@ -434,7 +436,7 @@
   .btn-calc:active{transform:scale(.99);}
 
   .result-card{
-    background:linear-gradient(135deg,var(--accent),#6366f1);
+    background:#0041FF;
     color:#fff;
     border:none;
     border-radius:22px;
@@ -482,7 +484,7 @@
 
   @media(max-width:760px){
     body{padding:14px;}
-    header{min-height:180px;}
+    header{min-height:64px;}
     header img{height:90px !important;}
     header h1{font-size:28px;}
     header p{font-size:15px !important;}
@@ -515,7 +517,7 @@
     <div class="grid">
       <div class="field full">
         <label>Ապահովագրական գումար (AMD)</label>
-        <input type="number" id="insuredAmount" value="20 000 000" min="100000" step="100000">
+        <input type="text" id="insuredAmount" value="20 000 000" inputmode="numeric" autocomplete="off">
       </div>
       <div class="field">
         <label>Ապահովադրի տեսակ</label>
@@ -884,16 +886,27 @@ function calculate() {
 
 
 function formatAmountInput(el){
-  let digits=el.value.replace(/\D/g,'');
-  if(!digits){el.value='';return;}
-  el.value=digits.replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+  const digits = el.value.replace(/\D/g, '');
+  el.value = digits ? digits.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : '';
 }
-document.addEventListener('DOMContentLoaded',()=>{
- const amt=document.getElementById('insuredAmount');
- if(amt){
-   formatAmountInput(amt);
-   amt.addEventListener('input',()=>formatAmountInput(amt));
- }
+document.addEventListener('DOMContentLoaded', () => {
+  const amt = document.getElementById('insuredAmount');
+  if (!amt) return;
+
+  formatAmountInput(amt);
+
+  amt.addEventListener('input', () => {
+    const digits = amt.value.replace(/\D/g, '');
+    amt.value = digits;
+  });
+
+  amt.addEventListener('blur', () => {
+    formatAmountInput(amt);
+  });
+
+  amt.addEventListener('focus', () => {
+    amt.value = amt.value.replace(/\D/g, '');
+  });
 });
 
 // Run once on load with default values
