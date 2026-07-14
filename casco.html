@@ -193,6 +193,7 @@ function calculate(){
  document.getElementById('rTariff').textContent=pct(tariff);
  document.getElementById('rCommission').textContent=commission.toFixed(4).replace(/0+$/,'').replace(/\.$/,'')+'% / '+fmt(commissionAmount)+' AMD';
  document.getElementById('rPremium').textContent=fmt(premium)+' AMD';
+ document.getElementById('resultCard').classList.remove('hidden');
  document.getElementById('resultCard').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function showError(msg){
