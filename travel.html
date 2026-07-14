@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="hy">
 <head>
+
+<script id="sil-page-access-guard">
+(function(){
+  const AUTH_KEY='sil_calculators_auth_v1';
+  if(localStorage.getItem(AUTH_KEY)!=='1'){
+    window.location.replace('index.html');
+  }
+})();
+</script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SIL Travel Insurance Calculator</title>

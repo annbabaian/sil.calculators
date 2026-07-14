@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="hy">
 <head>
+
+<script id="sil-page-access-guard">
+(function(){
+  const AUTH_KEY='sil_calculators_auth_v1';
+  if(localStorage.getItem(AUTH_KEY)!=='1'){
+    window.location.replace('index.html');
+  }
+})();
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ԿԱՍԿՈ ՀԱՇՎԻՉ</title>
@@ -12,14 +22,14 @@
 *{box-sizing:border-box}
 body{margin:0;background:linear-gradient(rgba(0,20,80,.38),rgba(0,20,80,.38)),url("images/casco-image-1-ee64797e9fbc.jpg") center center/cover fixed no-repeat;font-family:Arial,"Noto Sans Armenian",sans-serif;color:var(--text)}
 .hidden{display:none!important}
-.login-screen{min-height:100vh;display:grid;place-items:center;padding:20px;background:transparent}
-.login-card{width:min(390px,100%);background:#fff;padding:32px;border-radius:20px;box-shadow:0 18px 60px rgba(0,65,255,.14);border:1px solid #e3eaff;text-align:center}
+
+
 .logo{display:flex;justify-content:center;align-items:center}.logo img{width:min(260px,78vw);height:auto;display:block}
-.login-card h2{margin:12px 0 6px}.login-card p{color:var(--muted);margin:0 0 20px}
+
 input,select{width:100%;height:44px;border:1px solid var(--border);border-radius:10px;padding:0 12px;font-size:14px;background:white;color:var(--text)}
 input:focus,select:focus{outline:3px solid rgba(0,65,255,.12);border-color:var(--sil)}
 button{border:0;border-radius:10px;height:46px;padding:0 18px;font-weight:800;cursor:pointer}
-.primary{width:100%;background:var(--sil);color:white;margin-top:12px}.primary:hover{background:var(--sil-dark)}
+.primary:hover{background:var(--sil-dark)}
 .error{color:var(--danger);font-size:13px;margin-top:10px}
 .container{max-width:1050px;margin:auto;padding:24px 16px 52px}
 header{text-align:center;margin:4px 0 18px}
@@ -44,18 +54,7 @@ header p{margin:0;color:var(--muted)}
 </style>
 </head>
 <body>
-<section id="loginScreen" class="login-screen">
-  <div class="login-card">
-    <div class="logo"><img src="images/casco-image-2-f9666da28b6d.png" alt="SIL Insurance"></div>
-    <h2>ԿԱՍԿՈ ՀԱՇՎԻՉ</h2>
-    <p>Մուտքագրեք գաղտնաբառը</p>
-    <input id="password" type="password" autocomplete="current-password" placeholder="Գաղտնաբառ">
-    <button class="primary" onclick="login()">ՄՈՒՏՔ</button>
-    <div id="loginError" class="error hidden">Սխալ գաղտնաբառ</div>
-  </div>
-</section>
-
-<main id="app" class="hidden">
+<main id="app">
 <div class="container">
 <header><h1>ԿԱՍԿՈ ՀԱՇՎԻՉ</h1></header>
 <div class="grid">
@@ -118,14 +117,6 @@ header p{margin:0;color:var(--muted)}
 </main>
 
 <script>
-const PASSWORD='SIL2026';
-function login(){
- const ok=document.getElementById('password').value===PASSWORD;
- document.getElementById('loginError').classList.toggle('hidden',ok);
- if(ok){document.getElementById('loginScreen').classList.add('hidden');document.getElementById('app').classList.remove('hidden');}
-}
-document.getElementById('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
-
 const BASE={
  'բանկային լիզինգ':{
   'մինչև 2005':{'<7':.013186813186813187,'>7':.013186813186813187},

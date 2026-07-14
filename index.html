@@ -98,7 +98,7 @@
     async function tryLogin(){
       error.textContent='';
       if(await sha256(input.value)===PASSWORD_HASH){
-        sessionStorage.setItem(AUTH_KEY,'1');
+        localStorage.setItem(AUTH_KEY,'1');
         unlock();
       }else{
         error.textContent='Սխալ գաղտնաբառ';
@@ -111,7 +111,7 @@
     setTimeout(()=>input.focus(),50);
   }
   document.addEventListener('DOMContentLoaded',function(){
-    if(sessionStorage.getItem(AUTH_KEY)==='1') unlock(); else showLogin();
+    if(localStorage.getItem(AUTH_KEY)==='1') unlock(); else showLogin();
   });
 })();
 </script>
