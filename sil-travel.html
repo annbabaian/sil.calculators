@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+
+<script id="sil-page-access-guard">
+(function(){
+  const AUTH_KEY='sil_calculators_auth_v1';
+  if(sessionStorage.getItem(AUTH_KEY)!=='1'){
+    window.location.replace('index.html');
+  }
+})();
+</script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIL TRAVEL հաշվիչ</title>
+  <style>
+    :root{
+      --sil-blue:#3137fd;
+      --bg:#f5f7ff;
+      --card:#ffffff;
+      --text:#14151f;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, "Noto Sans Armenian", sans-serif;
+      background:
+        linear-gradient(rgba(0,0,0,.28), rgba(0,0,0,.28)),
+        url('images/travel-image-1-4b1341a521e5.png') center center / cover no-repeat fixed;
+      color:var(--text);
+      min-height:100vh;
+      padding:24px;
+    }
+    .wrap{max-width:900px;margin:0 auto}
+    .header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;min-height:220px}
+    .brand{font-size:34px;font-weight:800;color:#fff;letter-spacing:-1px;text-shadow:0 2px 12px rgba(0,0,0,.35);    display:flex;align-items:center}
+    .tag{color:rgba(255,255,255,.9);font-size:24px;text-shadow:0 2px 10px rgba(0,0,0,.35)}
+    .card{
+      background:rgba(255,255,255,.88);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      border:1px solid rgba(255,255,255,.45);
+      border-radius:22px;
+      box-shadow:0 20px 60px rgba(0,0,0,.25);
+      padding:22px;
+      margin-bottom:16px;
+    }
+    h1{font-size:25px;margin:0 0 6px}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
+    select,input{
+      width:100%;
+      padding:13px 12px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      font-size:15px;
+      background:white;
+    }
+    input:focus,select:focus{outline:2px solid rgba(49,55,253,.18);border-color:var(--sil-blue)}
+    .tabs{display:flex;gap:10px;margin:16px 0}
+    .tab{
+      flex:1;border:1px solid var(--border);background:#fff;color:var(--text);
+      padding:14px 12px;border-radius:16px;font-weight:800;cursor:pointer;
+    }
+    .tab.active{background:var(--sil-blue);color:#fff;border-color:var(--sil-blue)}
+    .hidden{display:none}
+    .result{
+      background:linear-gradient(135deg,var(--sil-blue),#6366f1);
+      color:#fff;
+      border-radius:22px;
+      padding:22px;
+      margin-top:16px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:end;
+    }
+    .price{font-size:38px;font-weight:900;white-space:nowrap}
+    .small{font-size:13px;color:var(--muted);line-height:1.5}
+    .result .small{color:rgba(255,255,255,.84)}
+    .note{
+      border-left:4px solid var(--sil-blue);
+      padding:10px 12px;
+      background:#f7f8ff;
+      border-radius:12px;
+      margin-top:12px;
+      color:#374151;
+      font-size:14px;
+      line-height:1.45;
+    }
+    .error-note{
+      margin-top:8px;
+      color:#dc2626;
+      font-size:13px;
+      font-weight:800;
+      line-height:1.35;
+      min-height:18px;
+    }
+    .pill{
+      display:inline-block;
+      padding:5px 9px;
+      border-radius:999px;
+      background:#eef2ff;
+      color:var(--sil-blue);
+      font-weight:800;
+      font-size:12px;
+    }
+    @media(max-width:760px){
+      body{padding:14px}
+      .grid,.grid3{grid-template-columns:1fr}
+      .result{grid-template-columns:1fr}
+      .price{font-size:32px}
+      .brand{font-size:128px}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div>
+      <div class="brand"><img src="images/travel-image-2-423120db77e2.png" alt="SIL Insurance" style="height:208px;width:auto;display:block;"></div>
+      <div class="tag">SIL TRAVEL</div>
+
+
+  <div class="card">
+   
+    <div class="tabs">
+      <button class="tab active" id="tabStandard" onclick="setMode('standard')">STANDARD</button>
+      <button class="tab" id="tabSpecial" onclick="setMode('special')">MULTI</button>
+      <button class="tab" id="tabGeorgia" onclick="setMode('georgia')">Վրաստան</button>
+    </div>
+
+    <section id="standardBlock">
+      <div class="grid3">
+        <div>
+          <label>Երկիր</label>
+          <input id="countryInput" list="countryList" placeholder="Օր․ Կիպրոս" oninput="countryChanged(); calculate();" />
+          <datalist id="countryList"></datalist>
+          <div id="countryException" class="error-note"></div>
+        </div>
+        <div>
+          <label>Գոտի</label>
+          <input id="autoZone" disabled placeholder="Ընտրեք երկիրը" />
+        </div>
+        <div>
+          <label>Ապահովագրական գումար</label>
+          <select id="stdCoverage" onchange="calculate()">
+            <option value="usd15000">15,000 USD</option>
+            <option value="usd50000">50,000 USD</option>
+            <option value="eur30000">30,000 EUR</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top:14px">
+        <div>
+          <label>Օրերի քանակ</label>
+          <input id="stdDaysCount" type="number" min="3" max="365" value="5" oninput="calculate()" />
+          <div id="stdDaysError" class="error-note"></div>
+        </div>
+        <div>
+          <label>Օրերի միջակայք</label>
+          <input id="stdRange" disabled />
+        </div>
+      </div>
+
+    </section>
+
+    <section id="specialBlock" class="hidden">
+      <div class="grid3">
+        <div>
+          <label>Ապահովագրական գումար</label>
+          <select id="spCoverage" onchange="calculate()">
+            <option value="30000">30,000 EUR</option>
+            <option value="10000">10,000 EUR</option>
+            <option value="7900">7,900 EUR</option>
+          </select>
+        </div>
+        <div>
+          <label>Ծրագիր</label>
+          <select id="spType" onchange="renderSpecialOptions(); calculate();">
+            <option value="egypt">Եգիպտոս՝ օրական սակագին</option>
+            <option value="world30">Ամբողջ աշխարհ — մինչև 30 օր</option>
+            <option value="world60">Ամբողջ աշխարհ — մինչև 60 օր</option>
+            <option value="world90">Ամբողջ աշխարհ — մինչև 90 օր</option>
+          </select>
+        </div>
+        <div id="specialDaysWrap">
+          <label>Օրերի քանակ</label>
+          <input id="spDays" type="number" min="3" value="5" oninput="calculate()" />
+          <div id="spDaysError" class="error-note"></div>
+        </div>
+      </div>
+      <div class="note" id="specialNote"></div>
+    </section>
+
+    <section id="georgiaBlock" class="hidden">
+      <div class="tabs">
+        <button class="tab active" id="tabGeorgiaStandard" onclick="setGeorgiaMode('standard')">STANDARD</button>
+        <button class="tab" id="tabGeorgiaSpecial" onclick="setGeorgiaMode('special')">MULTI</button>
+      </div>
+
+      <section id="georgiaStandardBlock">
+        <div class="grid3">
+          
+          <div>
+            <label>Ապահովագրական գումար</label>
+            <input value="30,000 USD" disabled />
+          </div>
+          <div>
+            <label>Օրերի քանակ</label>
+            <input id="geoStdDays" type="number" min="3" max="365" value="5" oninput="calculate()" />
+            <div id="geoStdDaysError" class="error-note"></div>
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:14px">
+          <div>
+            <label>Օրերի միջակայք</label>
+            <input id="geoStdRange" disabled />
+          </div>
+          <div>
+            <label>Սակագին</label>
+            <input id="geoStdRate" disabled />
+          </div>
+        </div>
+
+      </section>
+
+      <section id="georgiaSpecialBlock" class="hidden">
+        <div class="grid">
+          <div>
+            <label>Ծրագիր</label>
+            <input value="TR MULTI USD Georgia" disabled />
+          </div>
+          <div>
+            <label>Ապահովագրության օրեր՝ 365 օրվա ընթացքում</label>
+            <select id="geoMultiDays" onchange="calculate()">
+              <option value="30">30 օր</option>
+              <option value="60">60 օր</option>
+              <option value="90">90 օր</option>
+              <option value="120">120 օր</option>
+              <option value="180">180 օր</option>
+              <option value="365">365 օր</option>
+            </select>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <div class="grid" style="margin-top:14px">
+      <div>
+        <label>Ապահովագրվողի տարիք</label>
+        <input id="age" type="number" min="0" max="100" value="35" oninput="calculate()" />
+        <div id="ageException" class="error-note"></div>
+      </div>
+      <div>
+        <label>Տարիքային գործակից</label>
+        <input id="ageCoef" disabled />
+      </div>
+    </div>
+
+    <div class="result">
+      <div>
+        <div class="small">Ապահովագրավճար</div>
+        <div class="price" id="price">0 ֏</div>
+      </div>
+      <div class="small" id="details"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let mode = 'standard';
+let georgiaMode = 'standard';
+
+const countries = [
+  // Գոտի 1 — ըստ PDF-ի
+  {name:"Ավստրիա", zone:"1"}, {name:"Բելգիա", zone:"1"}, {name:"Հունգարիա", zone:"1"},
+  {name:"Հունաստան", zone:"1"}, {name:"Դանիա", zone:"1"}, {name:"Իսլանդիա", zone:"1"},
+  {name:"Իսպանիա", zone:"1"}, {name:"Իտալիա", zone:"1"}, {name:"Մալթա", zone:"1"},
+  {name:"Նիդերլանդներ", zone:"1"}, {name:"Նորվեգիա", zone:"1"}, {name:"Լեհաստան", zone:"1"},
+  {name:"Լյուքսեմբուրգ", zone:"1"}, {name:"Պորտուգալիա", zone:"1"}, {name:"Սլովակիա", zone:"1"},
+  {name:"Սլովենիա", zone:"1"}, {name:"Ֆինլանդիա", zone:"1"}, {name:"Ֆրանսիա", zone:"1"},
+  {name:"Գերմանիա", zone:"1"}, {name:"Չեխիա", zone:"1"}, {name:"Էստոնիա", zone:"1"},
+  {name:"Լատվիա", zone:"1"}, {name:"Լիտվա", zone:"1"}, {name:"Շվեդիա", zone:"1"},
+  {name:"Շվեյցարիա", zone:"1"}, {name:"Ալբանիա", zone:"1"}, {name:"Բուլղարիա", zone:"1"}, {name:"Մեծ Բրիտանիա", zone:"1"},
+  {name:"Իռլանդիա", zone:"1"}, {name:"Կիպրոս", zone:"1"}, {name:"Լիխտենշտեյն", zone:"1"},
+  {name:"Մակեդոնիա", zone:"1"}, {name:"Մոնակո", zone:"1"}, {name:"Ռումինիա", zone:"1"},
+  {name:"Խորվաթիա", zone:"1"}, {name:"Սերբիա", zone:"1"}, {name:"Մոնտենեգրո", zone:"1"},
+  {name:"Եգիպտոս", zone:"1"}, {name:"Մարրոկո", zone:"1"},
+  {name:"Թունիս", zone:"1"}, {name:"Իսրայել", zone:"1"}, {name:"Լիբանան", zone:"1"},
+  {name:"Սիրիա", zone:"1"}, {name:"Թուրքիա", zone:"1"}, {name:"Բահրեյն", zone:"1"},
+  {name:"Իրան", zone:"1"}, {name:"Եմենի Ժողովրդական Դեմոկրատական Հանրապետություն", zone:"1"},
+  {name:"Եմենի Արաբական Հանրապետություն", zone:"1"}, {name:"Քուվեյթ", zone:"1"}, {name:"Հորդանան", zone:"1"},
+  {name:"Օման", zone:"1"}, {name:"Միացյալ Արաբական Էմիրություններ", zone:"1"}, {name:"Սաուդյան Արաբիա", zone:"1"},
+
+  // Գոտի 2 — ըստ PDF-ի
+  {name:"Վրաստան", zone:"2"}, {name:"Ադրբեջան", zone:"2"}, {name:"Բելառուս", zone:"2"}, {name:"Ղազախստան", zone:"2"},
+  {name:"Ղրղզստան", zone:"2"}, {name:"Մոլդովա", zone:"2"}, {name:"Ռուսաստանի Դաշնություն", zone:"2"},
+  {name:"Ռուսաստան", zone:"2"}, {name:"Տաջիկստան", zone:"2"}, {name:"Ուզբեկստան", zone:"2"}, {name:"Ուկրաինա", zone:"2"},
+
+  // Գոտի 3 — PDF-ում նշված բացառությամբ և PDF-ում չնշված բոլոր երկրները
+  {name:"Ամբողջ աշխարհ", zone:"3"}, {name:"ՀՀ", zone:"3", exception:true}, {name:"Հայաստան", zone:"3", exception:true},
+  {name:"ԱՄՆ", zone:"3", exception:true}, {name:"Միացյալ Նահանգներ", zone:"3", exception:true}, {name:"Կանադա", zone:"3", exception:true},
+  {name:"Ավստրալիա", zone:"3"}, {name:"Նոր Զելանդիա", zone:"3"}, {name:"Անդորրա", zone:"3"}, {name:"Սան Մարինո", zone:"3"}, {name:"Վատիկան", zone:"3"},
+  {name:"Անտիգուա և Բարբուդա", zone:"3"}, {name:"Արգենտինա", zone:"3"}, {name:"Բահամներ", zone:"3"}, {name:"Բարբադոս", zone:"3"},
+  {name:"Բելիզ", zone:"3"}, {name:"Բոլիվիա", zone:"3"}, {name:"Բրազիլիա", zone:"3"}, {name:"Չիլի", zone:"3"}, {name:"Կոլումբիա", zone:"3"},
+  {name:"Կոստա Ռիկա", zone:"3"}, {name:"Կուբա", zone:"3"}, {name:"Դոմինիկա", zone:"3"}, {name:"Դոմինիկյան Հանրապետություն", zone:"3"},
+  {name:"Էկվադոր", zone:"3"}, {name:"Սալվադոր", zone:"3"}, {name:"Գրենադա", zone:"3"}, {name:"Գվատեմալա", zone:"3"},
+  {name:"Գայանա", zone:"3"}, {name:"Հաիթի", zone:"3"}, {name:"Հոնդուրաս", zone:"3"}, {name:"Ջամայկա", zone:"3"}, {name:"Մեքսիկա", zone:"3"},
+  {name:"Նիկարագուա", zone:"3"}, {name:"Պանամա", zone:"3"}, {name:"Պարագվայ", zone:"3"}, {name:"Պերու", zone:"3"},
+  {name:"Սենթ Քիթս և Նևիս", zone:"3"}, {name:"Սենթ Լյուսիա", zone:"3"}, {name:"Սենթ Վինսենթ և Գրենադիններ", zone:"3"},
+  {name:"Սուրինամ", zone:"3"}, {name:"Տրինիդադ և Տոբագո", zone:"3"}, {name:"Ուրուգվայ", zone:"3"}, {name:"Վենեսուելա", zone:"3"},
+  {name:"Անգոլա", zone:"3"}, {name:"Ալժիր", zone:"3"}, {name:"Բենին", zone:"3"}, {name:"Բոտսվանա", zone:"3"}, {name:"Բուրկինա Ֆասո", zone:"3"},
+  {name:"Բուրունդի", zone:"3"}, {name:"Գաբոն", zone:"3"}, {name:"Գամբիա", zone:"3"}, {name:"Գանա", zone:"3"}, {name:"Գվինեա", zone:"3"},
+  {name:"Գվինեա-Բիսաու", zone:"3"}, {name:"Կաբո Վերդե", zone:"3"}, {name:"Կամերուն", zone:"3"}, {name:"Կենտրոնական Աֆրիկյան Հանրապետություն", zone:"3"},
+  {name:"Կոմորներ", zone:"3"}, {name:"Կոնգո", zone:"3"}, {name:"Կոնգոյի Դեմոկրատական Հանրապետություն", zone:"3"}, {name:"Կոտ դ’Իվուար", zone:"3"},
+  {name:"Ջիբութի", zone:"3"}, {name:"Հասարակածային Գվինեա", zone:"3"}, {name:"Էրիթրեա", zone:"3"}, {name:"Եթովպիա", zone:"3"},
+  {name:"Քենիա", zone:"3"}, {name:"Լեսոտո", zone:"3"}, {name:"Լիբերիա", zone:"3"}, {name:"Լիբիա", zone:"3"}, {name:"Մադագասկար", zone:"3"},
+  {name:"Մալավի", zone:"3"}, {name:"Մալի", zone:"3"}, {name:"Մավրիտանիա", zone:"3"}, {name:"Մավրիկիոս", zone:"3"}, {name:"Մոզամբիկ", zone:"3"},
+  {name:"Նամիբիա", zone:"3"}, {name:"Նիգեր", zone:"3"}, {name:"Նիգերիա", zone:"3"}, {name:"Ռուանդա", zone:"3"}, {name:"Սան Տոմե և Պրինսիպի", zone:"3"},
+  {name:"Սենեգալ", zone:"3"}, {name:"Սեյշելներ", zone:"3"}, {name:"Սիերա Լեոնե", zone:"3"}, {name:"Սոմալի", zone:"3"},
+  {name:"Հարավային Աֆրիկա", zone:"3"}, {name:"Հարավային Սուդան", zone:"3"}, {name:"Սուդան", zone:"3"}, {name:"Էսվատինի", zone:"3"},
+  {name:"Տանզանիա", zone:"3"}, {name:"Տոգո", zone:"3"}, {name:"Ուգանդա", zone:"3"}, {name:"Զամբիա", zone:"3"}, {name:"Զիմբաբվե", zone:"3"},
+  {name:"Աֆղանստան", zone:"3"}, {name:"Բանգլադեշ", zone:"3"}, {name:"Բութան", zone:"3"}, {name:"Բրունեյ", zone:"3"}, {name:"Կամբոջա", zone:"3"},
+  {name:"Չինաստան", zone:"3"}, {name:"Հնդկաստան", zone:"3"}, {name:"Ինդոնեզիա", zone:"3"}, {name:"Իրաք", zone:"3"}, {name:"Ճապոնիա", zone:"3"},
+  {name:"Լաոս", zone:"3"}, {name:"Մալայզիա", zone:"3"}, {name:"Մալդիվներ", zone:"3"}, {name:"Մոնղոլիա", zone:"3"}, {name:"Մյանմա", zone:"3"},
+  {name:"Նեպալ", zone:"3"}, {name:"Հյուսիսային Կորեա", zone:"3"}, {name:"Հարավային Կորեա", zone:"3"}, {name:"Պակիստան", zone:"3"},
+  {name:"Ֆիլիպիններ", zone:"3"}, {name:"Սինգապուր", zone:"3"}, {name:"Շրի Լանկա", zone:"1"}, {name:"Թաիլանդ", zone:"3"},
+  {name:"Թիմոր-Լեստե", zone:"3"}, {name:"Վիետնամ", zone:"3"}, {name:"Կատար", zone:"3"}, {name:"Ազգային Պաղեստին", zone:"3"},
+  {name:"Կիպրոսի Հյուսիսային հատված", zone:"3"},
+  {name:"Ֆիջի", zone:"3"}, {name:"Կիրիբատի", zone:"3"}, {name:"Մարշալյան Կղզիներ", zone:"3"}, {name:"Միկրոնեզիա", zone:"3"},
+  {name:"Նաուրու", zone:"3"}, {name:"Պալաու", zone:"3"}, {name:"Պապուա Նոր Գվինեա", zone:"3"}, {name:"Սամոա", zone:"3"},
+  {name:"Սողոմոնյան Կղզիներ", zone:"3"}, {name:"Տոնգա", zone:"3"}, {name:"Տուվալու", zone:"3"}, {name:"Վանուատու", zone:"3"}
+];
+
+const stdRates = {
+  "1": {
+    usd15000: {"3-15":240,"16-30":230,"31-60":210,"61-90":190,"91-365":150},
+    usd50000: {"3-15":550,"16-30":500,"31-60":460,"61-90":410,"91-365":360},
+    eur30000: {"3-15":390,"16-30":360,"31-60":340,"61-90":320,"91-365":300}
+  },
+  "2": {
+    usd15000: {"3-15":260,"16-30":240,"31-60":230,"61-90":200,"91-365":180},
+    usd50000: {"3-15":580,"16-30":530,"31-60":480,"61-90":430,"91-365":380},
+    eur30000: {"3-15":410,"16-30":380,"31-60":350,"61-90":330,"91-365":310}
+  },
+  "3": {
+    usd15000: {"3-15":290,"16-30":260,"31-60":240,"61-90":210,"91-365":200},
+    usd50000: {"3-15":590,"16-30":540,"31-60":490,"61-90":440,"91-365":390},
+    eur30000: {"3-15":420,"16-30":390,"31-60":360,"61-90":340,"91-365":320}
+  }
+};
+
+const special = {
+  egypt:{type:"perday", rate:250, minDays:3, note:"Եգիպտոս՝ 250 դրամ մեկ օրվա համար։"},
+  world30:{type:"fixed", price:6500, note:"Ամբողջ աշխարհ՝ առավելագույնը 30 օր մեկ տարվա ընթացքում։"},
+  world60:{type:"fixed", price:8600, note:"Ամբողջ աշխարհ՝ առավելագույնը 60 օր մեկ տարվա ընթացքում։"},
+  world90:{type:"fixed", price:12000, note:"Ամբողջ աշխարհ՝ առավելագույնը 90 օր մեկ տարվա ընթացքում։"}
+};
+
+const georgiaStdRates = {"3-15":300,"16-30":260,"31-60":200,"61-90":200,"91-365":140};
+const georgiaMultiPrices = {30:4500,60:6500,90:8500,120:10000,180:12500,365:25000};
+
+function fillCountries(){
+  const dl = document.getElementById('countryList');
+  dl.innerHTML = [...countries]
+    .sort((a,b) => a.name.localeCompare(b.name,'hy'))
+    .map(c => `<option value="${c.name}"></option>`)
+    .join('');
+}
+
+function findCountry(){
+  const v = document.getElementById('countryInput').value.trim().toLowerCase();
+  return countries.find(c => c.name.toLowerCase() === v);
+}
+
+function countryChanged(){
+  const c = findCountry();
+  const autoZone = document.getElementById('autoZone');
+  const exception = document.getElementById('countryException');
+  exception.innerText = "";
+  if(!c){
+    autoZone.value = "";
+    return;
+  }
+  autoZone.value = "Գոտի " + c.zone;
+  if(c.exception){
+    exception.innerText = "Երկիրը բացառություն է կազմում";
+  }
+}
+
+function setMode(m){
+  mode=m;
+  document.getElementById('standardBlock').classList.toggle('hidden',m!=='standard');
+  document.getElementById('specialBlock').classList.toggle('hidden',m!=='special');
+  document.getElementById('georgiaBlock').classList.toggle('hidden',m!=='georgia');
+  document.getElementById('tabStandard').classList.toggle('active',m==='standard');
+  document.getElementById('tabSpecial').classList.toggle('active',m==='special');
+  document.getElementById('tabGeorgia').classList.toggle('active',m==='georgia');
+  calculate();
+}
+
+function setGeorgiaMode(m){
+  georgiaMode=m;
+  document.getElementById('georgiaStandardBlock').classList.toggle('hidden',m!=='standard');
+  document.getElementById('georgiaSpecialBlock').classList.toggle('hidden',m!=='special');
+  document.getElementById('tabGeorgiaStandard').classList.toggle('active',m==='standard');
+  document.getElementById('tabGeorgiaSpecial').classList.toggle('active',m==='special');
+  calculate();
+}
+
+function getRange(days){
+  if(days >= 3 && days <= 15) return "3-15";
+  if(days >= 16 && days <= 30) return "16-30";
+  if(days >= 31 && days <= 60) return "31-60";
+  if(days >= 61 && days <= 90) return "61-90";
+  if(days >= 91 && days <= 365) return "91-365";
+  return null;
+}
+
+function getGeorgiaRange(days){
+  if(days >= 3 && days <= 15) return "3-15";
+  if(days >= 16 && days <= 30) return "16-30";
+  if(days >= 31 && days <= 60) return "31-60";
+  if(days >= 61 && days <= 90) return "61-90";
+  if(days >= 91 && days <= 365) return "91-365";
+  return null;
+}
+
+function ageMultiplier(){
+  const age = Number(document.getElementById('age').value || 0);
+  if(age >= 74 && age <= 85) return 4;
+  if(age >= 70 && age <= 73) return 2;
+  return 1;
+}
+
+function renderSpecialOptions(){
+  const sp = special[document.getElementById('spType').value];
+  const daysWrap = document.getElementById('specialDaysWrap');
+  const days = document.getElementById('spDays');
+  const spDaysError = document.getElementById('spDaysError');
+  if(spDaysError) spDaysError.innerText = "";
+  if(sp.type === 'fixed'){
+    daysWrap.style.display = 'none';
+  } else {
+    daysWrap.style.display = 'block';
+    days.min = sp.minDays || 3;
+    if(sp.maxDays) days.max = sp.maxDays; else days.removeAttribute('max');
+  }
+  document.getElementById('specialNote').innerText = sp.note;
+}
+
+function calculate(){
+  const age = Number(document.getElementById('age').value || 0);
+  const ageException = document.getElementById('ageException');
+  ageException.innerText = "";
+
+  if(age >= 86){
+    ageException.innerText = "85 տ․-ից բարձր տարիքը բացառություն է";
+    document.getElementById('ageCoef').value = "";
+    document.getElementById('price').innerText = "0 ֏";
+    document.getElementById('details').innerText = "85 տ․-ից բարձր տարիքը բացառություն է";
+    return;
+  }
+
+  const mult = ageMultiplier();
+  document.getElementById('ageCoef').value = 'x ' + mult;
+
+  let price = 0, detail = '';
+
+  if(mode === 'standard'){
+    const country = findCountry();
+    const days = Number(document.getElementById('stdDaysCount').value || 0);
+    const range = getRange(days);
+    const stdDaysError = document.getElementById('stdDaysError');
+    stdDaysError.innerText = "";
+    document.getElementById('stdRange').value = range ? range + " օր" : "";
+
+    if(days > 0 && days < 3){
+      stdDaysError.innerText = "Նվազագույնը 3 օր";
+      document.getElementById('price').innerText = "0 ֏";
+      document.getElementById('details').innerText = "Նվազագույնը 3 օր";
+      return;
+    }
+    if(days > 365){
+      stdDaysError.innerText = "Առավելագույնը 365 օր";
+      document.getElementById('price').innerText = "0 ֏";
+      document.getElementById('details').innerText = "Առավելագույնը 365 օր";
+      return;
+    }
+    if(!country){
+      document.getElementById('price').innerText = "0 ֏";
+      document.getElementById('details').innerText = "Ընտրեք երկիրը ցանկից";
+      return;
+    }
+    if(country.exception){
+      document.getElementById('price').innerText = "0 ֏";
+      document.getElementById('details').innerText = "Երկիրը բացառություն է կազմում";
+      return;
+    }
+    if(!range){
+      document.getElementById('price').innerText = "0 ֏";
+      document.getElementById('details').innerText = "Օրերի քանակը սխալ է";
+      return;
+    }
+
+    const cov = document.getElementById('stdCoverage').value;
+    const rate = stdRates[country.zone][cov][range];
+    price = rate * days;
+    detail = `Գոտի ${country.zone} · ${rate} դրամ/օր × ${days} օր × տարիքային գործակից ${mult}`;
+  } else if(mode === 'special') {
+    const sp = special[document.getElementById('spType').value];
+    const spDaysError = document.getElementById('spDaysError');
+    if(spDaysError) spDaysError.innerText = "";
+    if(sp.type === 'fixed'){
+      price = sp.price;
+      detail = `Ֆիքսված սակագին × տարիքային գործակից ${mult}`;
+    } else {
+      const days = Number(document.getElementById('spDays').value || 0);
+      if(days > 0 && days < 3){
+        spDaysError.innerText = "Նվազագույնը 3 օր է";
+        document.getElementById('price').innerText = "0 ֏";
+        document.getElementById('details').innerText = "Նվազագույնը 3 օր է";
+        return;
+      }
+      if(sp.maxDays && days > sp.maxDays){
+        spDaysError.innerText = "Ծրագիրը գործում է առավելագույնը 15 օրվա դեպքում";
+        document.getElementById('price').innerText = "0 ֏";
+        document.getElementById('details').innerText = "Ծրագիրը գործում է առավելագույնը 15 օրվա դեպքում";
+        return;
+      }
+      if(sp.type === 'perday'){
+        price = sp.rate * days;
+        detail = `${sp.rate} դրամ/օր × ${days} օր × տարիքային գործակից ${mult}`;
+      } else if(sp.type === 'fixedWithDays'){
+        price = sp.price;
+        detail = `${days} օր · ֆիքսված ${sp.price.toLocaleString('en-US')} դրամ × տարիքային գործակից ${mult}`;
+      }
+    }
+  } else if(mode === 'georgia') {
+    if(georgiaMode === 'standard'){
+      const days = Number(document.getElementById('geoStdDays').value || 0);
+      const range = getGeorgiaRange(days);
+      const geoStdDaysError = document.getElementById('geoStdDaysError');
+      geoStdDaysError.innerText = "";
+      document.getElementById('geoStdRange').value = range ? range + " օր" : "";
+      document.getElementById('geoStdRate').value = range ? georgiaStdRates[range] + " դրամ/օր" : "";
+
+      if(days > 0 && days < 3){
+        geoStdDaysError.innerText = "Նվազագույնը 3 օր է";
+        document.getElementById('price').innerText = "0 ֏";
+        document.getElementById('details').innerText = "Նվազագույնը 3 օր է";
+        return;
+      }
+      if(days > 365){
+        geoStdDaysError.innerText = "Առավելագույնը 365 օր";
+        document.getElementById('price').innerText = "0 ֏";
+        document.getElementById('details').innerText = "Առավելագույնը 365 օր";
+        return;
+      }
+      if(!range){
+        document.getElementById('price').innerText = "0 ֏";
+        document.getElementById('details').innerText = "Օրերի քանակը սխալ է";
+        return;
+      }
+      const rate = georgiaStdRates[range];
+      price = rate * days;
+      detail = `Վրաստան STANDARD · 30,000 USD · ${rate} դրամ/օր × ${days} օր × տարիքային գործակից ${mult}`;
+    } else {
+      const days = Number(document.getElementById('geoMultiDays').value);
+      price = georgiaMultiPrices[days];
+    
+    }
+  }
+
+  price *= mult;
+  document.getElementById('price').innerText = Math.round(price).toLocaleString('en-US') + ' ֏';
+  document.getElementById('details').innerText = detail;
+}
+
+fillCountries();
+renderSpecialOptions();
+calculate();
+</script>
+</body>
+</html>
