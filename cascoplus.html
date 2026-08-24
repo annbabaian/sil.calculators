@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+
+<script id="sil-page-access-guard">
+(function(){
+  const AUTH_KEY='sil_calculators_auth_v1';
+  if(sessionStorage.getItem(AUTH_KEY)!=='1'){
+    window.location.replace('index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CASCO+ ՀԱՇՎԻՉ</title>
+<style>
+:root{
+  --sil:#0041FF; --sil-dark:#0034cc; --bg:#f4f7ff; --card:#fff;
+  --text:#152033; --muted:#667085; --border:#d9e2f2; --danger:#c62828; --gold:#C99B3A; --gold-light:#FBF3E0;
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(rgba(0,20,80,.38),rgba(0,20,80,.38)),url("images/casco-image-1-ee64797e9fbc.jpg") center center/cover fixed no-repeat;font-family:Arial,"Noto Sans Armenian",sans-serif;color:var(--text)}
+.hidden{display:none!important}
+input,select{width:100%;height:44px;border:1px solid var(--border);border-radius:10px;padding:0 12px;font-size:14px;background:white;color:var(--text)}
+input:focus,select:focus{outline:3px solid rgba(0,65,255,.12);border-color:var(--sil)}
+button{border:0;border-radius:10px;height:46px;padding:0 18px;font-weight:800;cursor:pointer}
+.error{color:var(--danger);font-size:13px;margin-top:10px}
+.container{max-width:1050px;margin:auto;padding:24px 16px 52px}
+header{text-align:center;margin:4px 0 18px}
+header h1{margin:4px 0 5px;color:#fff;font-size:30px;text-shadow:0 2px 14px rgba(0,0,0,.35)}
+header p{margin:0;color:#e3e9ff}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+.card{background:rgba(255,255,255,.93);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid #e3eaff;border-radius:18px;padding:20px;box-shadow:0 10px 32px rgba(31,55,107,.07)}
+.card h2{font-size:18px;margin:0 0 16px;color:#10275b;border-bottom:2px solid #edf1ff;padding-bottom:10px}
+.field{margin-bottom:14px}.field label{display:block;font-weight:700;font-size:13px;margin-bottom:6px}.hint{font-size:11px;color:var(--muted);margin-top:5px}
+.full{grid-column:1/-1}
+.action{background:var(--sil);color:#fff;width:100%;font-size:16px;margin-top:4px}
+.result-card{background:linear-gradient(135deg,#0041FF,#18379f);color:#fff}
+.result-card h2{color:#fff;border-color:rgba(255,255,255,.2)}
+.results{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.result{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:13px;border-radius:12px}
+.result span{display:block;font-size:12px;opacity:.8;margin-bottom:5px}.result strong{font-size:20px}
+.result.big{grid-column:1/-1;background:rgba(255,255,255,.18)}
+.result.big strong{font-size:28px}
+.breakdown{margin-top:14px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:14px}
+.breakdown h3{margin:0 0 10px;font-size:14px;color:#fff;opacity:.9}
+.row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed rgba(255,255,255,.2);padding:7px 0;font-size:13px}.row:last-child{border-bottom:0}
+.notes{font-size:12px;color:var(--muted);line-height:1.55;margin-top:14px}
+.note-gold{margin-top:16px;padding:12px 14px;background:var(--gold-light);border-left:3px solid var(--gold);border-radius:6px;font-size:12px;color:#7A5C1A;line-height:1.55}
+.tiers{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.tier{flex:1;min-width:140px;padding:14px 12px;border:2px solid var(--border);border-radius:12px;background:#f8faff;text-align:center;cursor:pointer;transition:all .15s}
+.tier:hover{border-color:#3372FF}
+.tier.active{border-color:var(--sil);background:#eef3ff}
+.tier .tn{display:block;font-weight:800;font-size:14px;color:#10275b}
+.tier .ts{display:block;font-size:11px;color:var(--muted);margin-top:4px}
+.tier.active .tn{color:var(--sil)}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.results{grid-template-columns:1fr}header h1{font-size:25px}}
+</style>
+</head>
+<body>
+<main id="app">
+<div class="container">
+<header><h1>CASCO+ ՀԱՇՎԻՉ</h1><p>Ասսիստանս փաթեթի հավելյալ արժեքի հաշվարկ</p></header>
+<div class="grid">
+
+  <section class="card full">
+    <h2>1. Հիմնական Կասկո ապահովագրավճար</h2>
+    <div class="field">
+      <label>Ապահովագրավճար, ՀՀ դրամ</label>
+      <input id="baseAmount" inputmode="numeric" placeholder="օր.՝ 300 000">
+      <div class="hint">Մուտքագրեք ԿԱՍԿՈ ՀԱՇՎԻՉ-ից (casco.html) ստացված ապահովագրավճարը</div>
+    </div>
+  </section>
+
+  <section class="card full">
+    <h2>2. Casco+ տարբերակի ընտրություն</h2>
+    <div class="tiers" id="tiers">
+      <div class="tier active" data-tier="0" onclick="selectTier(0)">
+        <span class="tn">Չկա</span><span class="ts">առանց Casco+</span></div>
+      <div class="tier" data-tier="1" onclick="selectTier(1)">
+        <span class="tn">Տարբերակ I</span><span class="ts">≤3 սթափ վարորդ/տարի</span></div>
+      <div class="tier" data-tier="2" onclick="selectTier(2)">
+        <span class="tn">Տարբերակ II</span><span class="ts">≤5 սթափ վարորդ/տարի</span></div>
+      <div class="tier" data-tier="3" onclick="selectTier(3)">
+        <span class="tn">Տարբերակ III</span><span class="ts">≤10 սթափ վարորդ/տարի</span></div>
+    </div>
+    <div class="hint">Ներառում է՝ վուլկանացում, մարտկոցի լիցքավորում, էվակուացիա, վառելիքի առաքում, սթափ վարորդ, տեղափոխման ծախսեր, անվադողերի սեզոնային փոխարինում, տեխզննման կազմակերպում, անվտանգ ավտոմեքենայի ախտորոշում։</div>
+  </section>
+
+  <section class="card">
+    <h2>3. Գնագոյացման հիմք</h2>
+    <div class="field"><label>Ինչպիսի՞ արժեքով հաշվարկել Casco+-ը</label>
+      <select id="pricingBasis" onchange="calculate()">
+        <option value="net">Նետտո ինքնարժեք</option>
+        <option value="min">Բրուտտո min (առանց միջնորդավճարի)</option>
+        <option value="max" selected>Բրուտտո max (ներառյալ միջնորդավճար)</option>
+      </select>
+    </div>
+    <div class="field"><label>Ծախսերի գործակից, J (%)</label>
+      <input id="jCoef" type="number" step="0.001" value="13.095">
+      <div class="hint">Կանխադրված՝ casco_2026.xlsx-ի 'result' թերթիկից (J=13.095%)</div>
+    </div>
+    <div class="field"><label>Միջնորդավճարի գործակից, K (%)</label>
+      <input id="kCoef" type="number" step="0.1" value="65">
+      <div class="hint">Կանխադրված՝ 65% (առավելագույն միջնորդավճար/վաճառքի ալիք)</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Ընտրված տարբերակի ինքնարժեքներ</h2>
+    <div class="row"><span>Նետտո ինքնարժեք</span><strong id="showNet">—</strong></div>
+    <div class="row"><span>Բրուտտո min</span><strong id="showMin">—</strong></div>
+    <div class="row"><span>Բրուտտո max</span><strong id="showMax">—</strong></div>
+    <div class="notes">Այս երեք արժեքները հաշվարկվում են ավտոմատ՝ ընտրված տարբերակի և վերևի J/K գործակիցների հիման վրա։</div>
+  </section>
+
+  <section class="card full">
+    <button class="action" onclick="calculate()">ՀԱՇՎԵԼ ԸՆԴՀԱՆՈՒՐ ԱՊԱՀՈՎԱԳՐԱՎՃԱՐԸ</button>
+    <div id="calcError" class="error hidden"></div>
+  </section>
+
+  <section id="resultCard" class="card result-card full">
+    <h2>Հաշվարկի արդյունք</h2>
+    <div class="results">
+      <div class="result"><span>Հիմնական Կասկո</span><strong id="rBase">—</strong></div>
+      <div class="result"><span>Casco+ հավելում</span><strong id="rAdd">—</strong></div>
+      <div class="result big"><span>ԸՆԴՀԱՆՈՒՐ ԱՊԱՀՈՎԱԳՐԱՎՃԱՐ</span><strong id="rTotal">—</strong></div>
+    </div>
+    <div class="breakdown">
+      <h3>Մանրամասն</h3>
+      <div class="row"><span>Ընտրված Casco+ տարբերակ</span><strong id="bTier">Չկա</strong></div>
+      <div class="row"><span>Գնագոյացման հիմք</span><strong id="bBasis">—</strong></div>
+      <div class="row"><span>Casco+-ի բաժինը ընդհանուր գումարում</span><strong id="bShare">—</strong></div>
+    </div>
+  </section>
+
+  <section class="card full">
+    <div class="note-gold">Casco+-ը նոր, փորձնական պրոդուկտ է. ինքնարժեքի ենթադրությունները (օգտագործման հավանականություն, միջին կիրառումների քանակ) հիմնված են մասամբ արտասահմանյան roadside-assistance շուկայի տվյալների (AAA, ADAC, Agero) և մասամբ ընկերության փորձագիտական գնահատականների վրա։ Դրանք պետք է վերանայվեն սեփական պորտֆելի իրական վիճակագրության կուտակմանը զուգահեռ (մանրամասն՝ CASCO+ бернвацутюн.xlsx ֆայլում)։</div>
+  </section>
+
+</div>
+</div>
+</main>
+
+<script>
+// Netto cost per tier, ՀՀ դրամ — from Բեռնվածություն sheet, casco_2026.xlsx-ի "result" logic (J,K) applied on top
+const TIERS = {
+  0: {label:'Չկա', net:0},
+  1: {label:'Տարբերակ I (≤3 սթափ վարորդ/տարի)', net:23518},
+  2: {label:'Տարբերակ II (≤5 սթափ վարորդ/տարի)', net:25543},
+  3: {label:'Տարբերակ III (≤10 սթափ վարորդ/տարի)', net:28243}
+};
+let selectedTier = 0;
+
+const fmt = n => new Intl.NumberFormat('hy-AM').format(Math.round(n)) + ' ֏';
+
+function selectTier(t){
+  selectedTier = t;
+  document.querySelectorAll('.tier').forEach(e=>e.classList.remove('active'));
+  document.querySelector('.tier[data-tier="'+t+'"]').classList.add('active');
+  calculate();
+}
+
+document.getElementById('baseAmount').addEventListener('input', e=>{
+  const digits = e.target.value.replace(/\D/g,'').slice(0,15);
+  e.target.value = digits ? new Intl.NumberFormat('fr-FR').format(Number(digits)).replace(/\u202f/g,' ') : '';
+});
+
+function cascoPlusValues(){
+  const net = TIERS[selectedTier].net;
+  const J = (Number(document.getElementById('jCoef').value)||0)/100;
+  const K = (Number(document.getElementById('kCoef').value)||0)/100;
+  const min = net>0 ? net/(1-J) : 0;
+  const max = net>0 ? net/(1-J-K) : 0;
+  return {net, min, max};
+}
+
+function updateTierPreview(){
+  const {net,min,max} = cascoPlusValues();
+  document.getElementById('showNet').textContent = fmt(net);
+  document.getElementById('showMin').textContent = fmt(min);
+  document.getElementById('showMax').textContent = fmt(max);
+}
+
+function calculate(){
+  updateTierPreview();
+  const err = document.getElementById('calcError'); err.classList.add('hidden');
+  const base = Number(document.getElementById('baseAmount').value.replace(/\s/g,''))||0;
+  if(base<=0){
+    err.textContent = 'Լրացրեք հիմնական Կասկո ապահովագրավճարը։';
+    err.classList.remove('hidden');
+    return;
+  }
+  const basis = document.getElementById('pricingBasis').value;
+  const {net,min,max} = cascoPlusValues();
+  const addValue = basis==='net' ? net : (basis==='min' ? min : max);
+  const total = base + addValue;
+  const basisLabel = basis==='net' ? 'Նետտո ինքնարժեք' : (basis==='min' ? 'Բրուտտո min' : 'Բրուտտո max');
+
+  document.getElementById('rBase').textContent = fmt(base);
+  document.getElementById('rAdd').textContent = fmt(addValue);
+  document.getElementById('rTotal').textContent = fmt(total);
+  document.getElementById('bTier').textContent = TIERS[selectedTier].label;
+  document.getElementById('bBasis').textContent = basisLabel;
+  document.getElementById('bShare').textContent = total>0 ? ((addValue/total)*100).toFixed(1)+'%' : '0%';
+}
+
+updateTierPreview();
+calculate();
+</script>
+</body>
+</html>
