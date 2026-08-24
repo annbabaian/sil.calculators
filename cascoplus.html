@@ -13,23 +13,28 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CASCO+ ՀԱՇՎԻՉ</title>
+<title>ԿԱՍԿՈ ՀԱՇՎԻՉ</title>
 <style>
 :root{
   --sil:#0041FF; --sil-dark:#0034cc; --bg:#f4f7ff; --card:#fff;
-  --text:#152033; --muted:#667085; --border:#d9e2f2; --danger:#c62828; --gold:#C99B3A; --gold-light:#FBF3E0;
+  --text:#152033; --muted:#667085; --border:#d9e2f2; --danger:#c62828;
 }
 *{box-sizing:border-box}
 body{margin:0;background:linear-gradient(rgba(0,20,80,.38),rgba(0,20,80,.38)),url("images/casco-image-1-ee64797e9fbc.jpg") center center/cover fixed no-repeat;font-family:Arial,"Noto Sans Armenian",sans-serif;color:var(--text)}
 .hidden{display:none!important}
+
+
+.logo{display:flex;justify-content:center;align-items:center}.logo img{width:min(260px,78vw);height:auto;display:block}
+
 input,select{width:100%;height:44px;border:1px solid var(--border);border-radius:10px;padding:0 12px;font-size:14px;background:white;color:var(--text)}
 input:focus,select:focus{outline:3px solid rgba(0,65,255,.12);border-color:var(--sil)}
 button{border:0;border-radius:10px;height:46px;padding:0 18px;font-weight:800;cursor:pointer}
+.primary:hover{background:var(--sil-dark)}
 .error{color:var(--danger);font-size:13px;margin-top:10px}
 .container{max-width:1050px;margin:auto;padding:24px 16px 52px}
 header{text-align:center;margin:4px 0 18px}
 header h1{margin:4px 0 5px;color:#fff;font-size:30px;text-shadow:0 2px 14px rgba(0,0,0,.35)}
-header p{margin:0;color:#e3e9ff}
+header p{margin:0;color:var(--muted)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
 .card{background:rgba(255,255,255,.93);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid #e3eaff;border-radius:18px;padding:20px;box-shadow:0 10px 32px rgba(31,55,107,.07)}
 .card h2{font-size:18px;margin:0 0 16px;color:#10275b;border-bottom:2px solid #edf1ff;padding-bottom:10px}
@@ -41,40 +46,69 @@ header p{margin:0;color:#e3e9ff}
 .results{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .result{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:13px;border-radius:12px}
 .result span{display:block;font-size:12px;opacity:.8;margin-bottom:5px}.result strong{font-size:20px}
-.result.big{grid-column:1/-1;background:rgba(255,255,255,.18)}
-.result.big strong{font-size:28px}
-.breakdown{margin-top:14px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:14px}
-.breakdown h3{margin:0 0 10px;font-size:14px;color:#fff;opacity:.9}
-.row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed rgba(255,255,255,.2);padding:7px 0;font-size:13px}.row:last-child{border-bottom:0}
+.breakdown{margin-top:14px;background:#f8faff;border:1px solid #dfe7ff;border-radius:14px;padding:14px}
+.breakdown h3{margin:0 0 10px;font-size:15px;color:#10275b}
+.row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed #dfe4ef;padding:7px 0;font-size:13px}.row:last-child{border-bottom:0}
 .notes{font-size:12px;color:var(--muted);line-height:1.55;margin-top:14px}
-.note-gold{margin-top:16px;padding:12px 14px;background:var(--gold-light);border-left:3px solid var(--gold);border-radius:6px;font-size:12px;color:#7A5C1A;line-height:1.55}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.results{grid-template-columns:1fr}header h1{font-size:25px}}
 .tiers{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
-.tier{flex:1;min-width:140px;padding:14px 12px;border:2px solid var(--border);border-radius:12px;background:#f8faff;text-align:center;cursor:pointer;transition:all .15s}
+.tier{flex:1;min-width:120px;padding:12px 10px;border:2px solid var(--border);border-radius:12px;background:#f8faff;text-align:center;cursor:pointer;transition:all .15s}
 .tier:hover{border-color:#3372FF}
 .tier.active{border-color:var(--sil);background:#eef3ff}
-.tier .tn{display:block;font-weight:800;font-size:14px;color:#10275b}
-.tier .ts{display:block;font-size:11px;color:var(--muted);margin-top:4px}
+.tier .tn{display:block;font-weight:800;font-size:13px;color:#10275b}
+.tier .ts{display:block;font-size:10.5px;color:var(--muted);margin-top:3px}
 .tier.active .tn{color:var(--sil)}
-@media(max-width:760px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.results{grid-template-columns:1fr}header h1{font-size:25px}}
+.result.big{grid-column:1/-1;background:rgba(255,255,255,.18)}
+.result.big strong{font-size:26px}
 </style>
 </head>
 <body>
 <main id="app">
 <div class="container">
-<header><h1>CASCO+ ՀԱՇՎԻՉ</h1><p>Ասսիստանս փաթեթի հավելյալ արժեքի հաշվարկ</p></header>
+<header><h1>ԿԱՍԿՈ ՀԱՇՎԻՉ</h1></header>
 <div class="grid">
+  <section class="card">
+    <h2>Հիմնական տվյալներ</h2>
+    <div class="field"><label>Ապահովագրական գումար (AMD)</label><input id="amount" inputmode="numeric" placeholder="օր.՝ 5 625 000"></div>
+    <div class="field"><label>Ապահովադրի տեսակ</label><select id="client">
+      <option>բանկային լիզինգ</option><option>Իրավաբանական անձ</option><option selected>Ֆիզիկական անձ</option>
+    </select></div>
+    <div class="field"><label>Մեքենայի տարեթիվ</label><select id="year">
+      <option>2021-ից բարձր</option><option selected>2016-2020</option><option>2011-2015</option><option>2006-2010</option><option>մինչև 2005</option>
+    </select></div>
+    <div class="field"><label>Երաշխիքային սպասարկում</label><select id="warranty"><option>ներառել</option><option selected>չներառել</option></select>
+      <div class="hint">Excel-ի հաշվարկով թույլատրվում է միայն «2021-ից բարձր» տարբերակի համար։</div></div>
+    <div class="field"><label>Վարորդների քանակ</label><select id="drivers"><option>Սահմանափակ</option><option selected>Անսահմանափակ</option></select></div>
+    <div class="field"><label>Ֆրանշիզա</label><select id="franchise"><option>Ֆրանշիզան անփոփոխ</option><option selected>Ֆրանշիզայի կիսում</option><option>Մինիմամալ ֆրանշիզա</option></select></div>
+  </section>
 
-  <section class="card full">
-    <h2>1. Հիմնական Կասկո ապահովագրավճար</h2>
-    <div class="field">
-      <label>Ապահովագրավճար, ՀՀ դրամ</label>
-      <input id="baseAmount" inputmode="numeric" placeholder="օր.՝ 300 000">
-      <div class="hint">Մուտքագրեք ԿԱՍԿՈ ՀԱՇՎԻՉ-ից (casco.html) ստացված ապահովագրավճարը</div>
-    </div>
+  <section class="card">
+    <h2>Ծածկույթ և պայմաններ</h2>
+    <div class="field"><label>Վճարման ձև</label><select id="payment"><option>Միանվագ</option><option selected>2 վճարում</option><option>4 վճարում</option><option>12 վճարում</option></select></div>
+    <div class="field"><label>Ճեկ կանոններ</label><select id="jack"><option selected>ներառել</option><option>չներառել</option></select>
+      <div class="hint">Ազդեցություն ունի միայն ֆիզիկական անձի համար։</div></div>
+    <div class="field"><label>Տարածաշրջան</label><select id="region"><option selected>Միայն ՀՀ</option><option>ՀՀ և Վրաստան</option><option>ՀՀ, Վրաստան և ԱՊՀ երկրներ</option></select></div>
+    <div class="field"><label>Գողության ռիսկ՝ ներառյալ մանր դետալներ</label><select id="theft"><option selected>ներառել</option><option>չներառել</option></select></div>
+    <div class="field"><label>Գողության ռիսկ չներառելու չափը (%)</label><input id="theftPct" type="number" min="0" max="30" step="1" value="30"><div class="hint">Հաշվարկում առավելագույնը՝ 30%</div></div>
+    <div class="field"><label>Էլեկտրոմոբիլ</label><select id="electric"><option>Ոչ</option><option selected>Այո</option></select></div>
+  </section>
+
+  <section class="card">
+    <h2>Բոնուս Մալուս / վնասաբերություն</h2>
+    <div class="field"><label>Բոնուս Մալուս դաս</label><select id="bm"><option>չընտրել</option><option selected>&lt;=7</option><option>8-10</option><option>11-12</option><option>13-14</option></select></div>
+    <div class="field"><label>Վնասաբերություն</label><select id="loss"><option selected>չընտրել</option><option>Վնասաբերությունը >= 90%</option><option>Վնասաբերությունը < 90%</option></select></div>
+    <div class="notes">Ընտրեք ԲՄ կամ վնասաբերություն՝ ոչ երկուսը միաժամանակ։</div>
+  </section>
+
+  <section class="card">
+    <h2>Միջնորդավճար և շահույթ</h2>
+    <div class="field"><label>Միջնորդավճար (%)</label><input id="commission" type="number" min="0" max="80" step="0.1" value="10"></div>
+    <div class="field"><label>Շահույթ (%)</label><input id="profit" type="number" value="10" readonly></div>
+    <div class="hint">Excel-ում շահույթը սահմանված է 10%։ Միջնորդավճարը մասնակցում է սակագնի հաշվարկին՝ որպես բաժանարար։</div>
   </section>
 
   <section class="card full">
-    <h2>2. Casco+ տարբերակի ընտրություն</h2>
+    <h2>Casco+ ասսիստանս (կամընտիր հավելում)</h2>
     <div class="tiers" id="tiers">
       <div class="tier active" data-tier="0" onclick="selectTier(0)">
         <span class="tn">Չկա</span><span class="ts">առանց Casco+</span></div>
@@ -88,126 +122,139 @@ header p{margin:0;color:#e3e9ff}
     <div class="hint">Ներառում է՝ վուլկանացում, մարտկոցի լիցքավորում, էվակուացիա, վառելիքի առաքում, սթափ վարորդ, տեղափոխման ծախսեր, անվադողերի սեզոնային փոխարինում, տեխզննման կազմակերպում, անվտանգ ավտոմեքենայի ախտորոշում։</div>
   </section>
 
-  <section class="card">
-    <h2>3. Գնագոյացման հիմք</h2>
-    <div class="field"><label>Ինչպիսի՞ արժեքով հաշվարկել Casco+-ը</label>
-      <select id="pricingBasis" onchange="calculate()">
-        <option value="net">Նետտո ինքնարժեք</option>
-        <option value="min">Բրուտտո min (առանց միջնորդավճարի)</option>
-        <option value="max" selected>Բրուտտո max (ներառյալ միջնորդավճար)</option>
-      </select>
-    </div>
-    <div class="field"><label>Ծախսերի գործակից, J (%)</label>
-      <input id="jCoef" type="number" step="0.001" value="13.095">
-      <div class="hint">Կանխադրված՝ casco_2026.xlsx-ի 'result' թերթիկից (J=13.095%)</div>
-    </div>
-    <div class="field"><label>Միջնորդավճարի գործակից, K (%)</label>
-      <input id="kCoef" type="number" step="0.1" value="65">
-      <div class="hint">Կանխադրված՝ 65% (առավելագույն միջնորդավճար/վաճառքի ալիք)</div>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>Ընտրված տարբերակի ինքնարժեքներ</h2>
-    <div class="row"><span>Նետտո ինքնարժեք</span><strong id="showNet">—</strong></div>
-    <div class="row"><span>Բրուտտո min</span><strong id="showMin">—</strong></div>
-    <div class="row"><span>Բրուտտո max</span><strong id="showMax">—</strong></div>
-    <div class="notes">Այս երեք արժեքները հաշվարկվում են ավտոմատ՝ ընտրված տարբերակի և վերևի J/K գործակիցների հիման վրա։</div>
-  </section>
-
   <section class="card full">
-    <button class="action" onclick="calculate()">ՀԱՇՎԵԼ ԸՆԴՀԱՆՈՒՐ ԱՊԱՀՈՎԱԳՐԱՎՃԱՐԸ</button>
+    <button class="action" onclick="calculate()">ՀԱՇՎԵԼ ԱՊԱՀՈՎԱԳՐԱՎՃԱՐԸ</button>
     <div id="calcError" class="error hidden"></div>
   </section>
 
-  <section id="resultCard" class="card result-card full">
+  <section id="resultCard" class="card result-card full hidden">
     <h2>Հաշվարկի արդյունք</h2>
     <div class="results">
-      <div class="result"><span>Հիմնական Կասկո</span><strong id="rBase">—</strong></div>
-      <div class="result"><span>Casco+ հավելում</span><strong id="rAdd">—</strong></div>
+      <div class="result"><span>Ապահովագրական գումար</span><strong id="rAmount">—</strong></div>
+      <div class="result"><span>Սակագին</span><strong id="rTariff">—</strong></div>
+      <div class="result"><span>Միջնորդավճար</span><strong id="rCommission">—</strong></div>
+      <div class="result"><span>Կասկո ապահովագրավճար</span><strong id="rPremium">—</strong></div>
+      <div class="result"><span>Casco+ հավելում</span><strong id="rCascoPlus">—</strong></div>
       <div class="result big"><span>ԸՆԴՀԱՆՈՒՐ ԱՊԱՀՈՎԱԳՐԱՎՃԱՐ</span><strong id="rTotal">—</strong></div>
     </div>
-    <div class="breakdown">
-      <h3>Մանրամասն</h3>
-      <div class="row"><span>Ընտրված Casco+ տարբերակ</span><strong id="bTier">Չկա</strong></div>
-      <div class="row"><span>Գնագոյացման հիմք</span><strong id="bBasis">—</strong></div>
-      <div class="row"><span>Casco+-ի բաժինը ընդհանուր գումարում</span><strong id="bShare">—</strong></div>
-    </div>
   </section>
-
-  <section class="card full">
-    <div class="note-gold">Casco+-ը նոր, փորձնական պրոդուկտ է. ինքնարժեքի ենթադրությունները (օգտագործման հավանականություն, միջին կիրառումների քանակ) հիմնված են մասամբ արտասահմանյան roadside-assistance շուկայի տվյալների (AAA, ADAC, Agero) և մասամբ ընկերության փորձագիտական գնահատականների վրա։ Դրանք պետք է վերանայվեն սեփական պորտֆելի իրական վիճակագրության կուտակմանը զուգահեռ (մանրամասն՝ CASCO+ бернвацутюн.xlsx ֆայլում)։</div>
-  </section>
-
 </div>
 </div>
 </main>
 
 <script>
-// Netto cost per tier, ՀՀ դրամ — from Բեռնվածություն sheet, casco_2026.xlsx-ի "result" logic (J,K) applied on top
-const TIERS = {
+const BASE={
+ 'բանկային լիզինգ':{
+  'մինչև 2005':{'<7':.013186813186813187,'>7':.013186813186813187},
+  '2006-2010':{'<7':.013186813186813187,'>7':.013186813186813187},
+  '2011-2015':{'<7':.013186813186813187,'>7':.013186813186813187},
+  '2016-2020':{'<7':.013186813186813187,'>7':.013186813186813187},
+  '2021-ից բարձր':{'<7':.013186813186813187,'>7':.013186813186813187}},
+ 'Իրավաբանական անձ':{
+  'մինչև 2005':{'<7':.01631868131868132,'>7':.014241758241758242},
+  '2006-2010':{'<7':.01631868131868132,'>7':.014241758241758242},
+  '2011-2015':{'<7':.01631868131868132,'>7':.014241758241758242},
+  '2016-2020':{'<7':.01631868131868132,'>7':.014241758241758242},
+  '2021-ից բարձր':{'<7':.01631868131868132,'>7':.014241758241758242}},
+ 'Ֆիզիկական անձ':{
+  'մինչև 2005':{'<7':.018131868131868133,'>7':.015824175824175824},
+  '2006-2010':{'<7':.018131868131868133,'>7':.022267393067225427},
+  '2011-2015':{'<7':.018131868131868133,'>7':.015824175824175824},
+  '2016-2020':{'<7':.018131868131868133,'>7':.015824175824175824},
+  '2021-ից բարձր':{'<7':.018131868131868133,'>7':.015824175824175824}}
+};
+const FLOOR={
+ '<7':{'Ֆիզիկական անձ':.0217,'բանկային լիզինգ':.0123,'Իրավաբանական անձ':.0115},
+ '>7':{'Ֆիզիկական անձ':.0134,'բանկային լիզինգ':.0089,'Իրավաբանական անձ':.0088}
+};
+const BM={'<=7':-.002662794378746934,'8-10':0,'11-12':.0055275334397962665,'13-14':.010545889076784134};
+const FR={'Ֆրանշիզան անփոփոխ':0,'Ֆրանշիզայի կիսում':.0016974281768410105,'Մինիմամալ ֆրանշիզա':.004073827624418436};
+const fmt=n=>new Intl.NumberFormat('hy-AM').format(Math.round(n));
+const pct=n=>(n*100).toFixed(4)+'%';
+
+// Casco+ tiers — netto ինքնարժեք, ՀՀ դրամ (Ենթադրություններ/Բեռնվածություն թերթիկներից)
+const CASCOPLUS_TIERS = {
   0: {label:'Չկա', net:0},
   1: {label:'Տարբերակ I (≤3 սթափ վարորդ/տարի)', net:23518},
   2: {label:'Տարբերակ II (≤5 սթափ վարորդ/տարի)', net:25543},
   3: {label:'Տարբերակ III (≤10 սթափ վարորդ/տարի)', net:28243}
 };
-let selectedTier = 0;
-
-const fmt = n => new Intl.NumberFormat('hy-AM').format(Math.round(n)) + ' ֏';
+const CASCOPLUS_J = 0.13095;   // ծախսերի գործակից, casco_2026.xlsx "result" թերթիկից
+const CASCOPLUS_K = 0.65;      // միջնորդավճարի գործակից (առավելագույն)
+let selectedCascoPlusTier = 0;
 
 function selectTier(t){
-  selectedTier = t;
+  selectedCascoPlusTier = t;
   document.querySelectorAll('.tier').forEach(e=>e.classList.remove('active'));
   document.querySelector('.tier[data-tier="'+t+'"]').classList.add('active');
-  calculate();
 }
 
-document.getElementById('baseAmount').addEventListener('input', e=>{
-  const digits = e.target.value.replace(/\D/g,'').slice(0,15);
-  e.target.value = digits ? new Intl.NumberFormat('fr-FR').format(Number(digits)).replace(/\u202f/g,' ') : '';
+function cascoPlusBrutoMax(){
+  const net = CASCOPLUS_TIERS[selectedCascoPlusTier].net;
+  if(net<=0) return 0;
+  return net/(1-CASCOPLUS_J-CASCOPLUS_K);
+}
+
+document.getElementById('amount').addEventListener('input',e=>{
+ const digits=e.target.value.replace(/\D/g,'').slice(0,15);
+ e.target.value=digits?new Intl.NumberFormat('fr-FR').format(Number(digits)).replace(/\u202f/g,' '):'';
 });
 
-function cascoPlusValues(){
-  const net = TIERS[selectedTier].net;
-  const J = (Number(document.getElementById('jCoef').value)||0)/100;
-  const K = (Number(document.getElementById('kCoef').value)||0)/100;
-  const min = net>0 ? net/(1-J) : 0;
-  const max = net>0 ? net/(1-J-K) : 0;
-  return {net, min, max};
-}
-
-function updateTierPreview(){
-  const {net,min,max} = cascoPlusValues();
-  document.getElementById('showNet').textContent = fmt(net);
-  document.getElementById('showMin').textContent = fmt(min);
-  document.getElementById('showMax').textContent = fmt(max);
-}
-
 function calculate(){
-  updateTierPreview();
-  const err = document.getElementById('calcError'); err.classList.add('hidden');
-  const base = Number(document.getElementById('baseAmount').value.replace(/\s/g,''))||0;
-  if(base<=0){
-    err.textContent = 'Լրացրեք հիմնական Կասկո ապահովագրավճարը։';
-    err.classList.remove('hidden');
-    return;
-  }
-  const basis = document.getElementById('pricingBasis').value;
-  const {net,min,max} = cascoPlusValues();
-  const addValue = basis==='net' ? net : (basis==='min' ? min : max);
-  const total = base + addValue;
-  const basisLabel = basis==='net' ? 'Նետտո ինքնարժեք' : (basis==='min' ? 'Բրուտտո min' : 'Բրուտտո max');
+ const err=document.getElementById('calcError'); err.classList.add('hidden');
+ const amount=Number(document.getElementById('amount').value.replace(/\s/g,''));
+ const client=document.getElementById('client').value, year=document.getElementById('year').value;
+ const warranty=document.getElementById('warranty').value, bm=document.getElementById('bm').value, loss=document.getElementById('loss').value;
+ if(!amount||amount<=0)return showError('Լրացրեք ապահովագրական գումարը։');
+ if(warranty==='ներառել'&&year!=='2021-ից բարձր')return showError('Excel-ի տրամաբանությամբ երաշխիքային սպասարկումը կարելի է ներառել միայն «2021-ից բարձր» մեքենաների համար։');
+ if(bm!=='չընտրել'&&loss!=='չընտրել')return showError('Ընտրեք Բոնուս Մալուս կամ Վնասաբերություն դաշտերից միայն մեկը։');
+ if(bm==='չընտրել'&&loss==='չընտրել')return showError('Ընտրեք Բոնուս Մալուս կամ Վնասաբերություն դաշտերից մեկը։');
 
-  document.getElementById('rBase').textContent = fmt(base);
-  document.getElementById('rAdd').textContent = fmt(addValue);
-  document.getElementById('rTotal').textContent = fmt(total);
-  document.getElementById('bTier').textContent = TIERS[selectedTier].label;
-  document.getElementById('bBasis').textContent = basisLabel;
-  document.getElementById('bShare').textContent = total>0 ? ((addValue/total)*100).toFixed(1)+'%' : '0%';
+ const bracket=amount<7000000?'<7':'>7', base=BASE[client][year][bracket];
+ const items=[['Բազային սակագին',base]];
+ items.push(['Երաշխիքային սպասարկում',warranty==='ներառել'?.30*base:0]);
+ items.push(['Անսահմանափակ վարորդներ',document.getElementById('drivers').value==='Անսահմանափակ'?.003:0]);
+ items.push(['Ֆրանշիզա',FR[document.getElementById('franchise').value]]);
+ items.push(['Բոնուս Մալուս',bm==='չընտրել'?0:BM[bm]]);
+ items.push(['Վնասաբերություն',loss==='Վնասաբերությունը >= 90%'?.15*base:0]);
+
+ const pay=document.getElementById('payment').value;
+ items.push(['Վճարման ձև',({'Միանվագ':0,'2 վճարում':.05,'4 վճարում':.10,'12 վճարում':.20}[pay])*base]);
+ items.push(['Ճեկ կանոններ',(client==='Ֆիզիկական անձ'&&document.getElementById('jack').value==='ներառել')?.20*base:0]);
+
+ const theft=document.getElementById('theft').value;
+ const theftPct=Math.min(Math.max(Number(document.getElementById('theftPct').value)||0,0),30)/100;
+ items.push(['Գողության ռիսկ',theft==='չներառել'?-theftPct*base:0]);
+
+ const region=document.getElementById('region').value;
+ items.push(['Տարածաշրջան',({'Միայն ՀՀ':0,'ՀՀ և Վրաստան':.05,'ՀՀ, Վրաստան և ԱՊՀ երկրներ':.20}[region])*base]);
+ items.push(['Էլեկտրոմոբիլ',document.getElementById('electric').value==='Այո'?-.001:0]);
+
+ const net=items.reduce((s,x)=>s+x[1],0);
+ const commission=(Number(document.getElementById('commission').value)||0)/100, profit=.10;
+ if(commission<0||commission>=1)return showError('Միջնորդավճարը պետք է լինի 0%-ից մինչև 100%-ից փոքր։');
+ let tariff=net/(1-commission)/(1-profit);
+ tariff=Math.max(tariff,FLOOR[bracket][client]);
+ const premium=Math.round((tariff*amount)/1000)*1000;
+ const commissionAmount=premium*commission;
+
+ document.getElementById('rAmount').textContent=fmt(amount)+' AMD';
+ document.getElementById('rTariff').textContent=pct(tariff);
+ document.getElementById('rCommission').textContent=commission.toFixed(4).replace(/0+$/,'').replace(/\.$/,'')+'% / '+fmt(commissionAmount)+' AMD';
+ document.getElementById('rPremium').textContent=fmt(premium)+' AMD';
+
+ const cascoPlusValue=cascoPlusBrutoMax();
+ const totalPremium=premium+cascoPlusValue;
+ document.getElementById('rCascoPlus').textContent=(cascoPlusValue>0?fmt(cascoPlusValue)+' AMD':'—');
+ document.getElementById('rTotal').textContent=fmt(totalPremium)+' AMD';
+
+ document.getElementById('resultCard').classList.remove('hidden');
+ document.getElementById('resultCard').scrollIntoView({behavior:'smooth',block:'start'});
 }
-
-updateTierPreview();
-calculate();
+function showError(msg){
+ const e=document.getElementById('calcError');e.textContent=msg;e.classList.remove('hidden');
+ document.getElementById('resultCard').classList.add('hidden');
+}
 </script>
 </body>
 </html>
