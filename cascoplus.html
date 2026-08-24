@@ -187,6 +187,10 @@ function selectTier(t){
   selectedCascoPlusTier = t;
   document.querySelectorAll('.tier').forEach(e=>e.classList.remove('active'));
   document.querySelector('.tier[data-tier="'+t+'"]').classList.add('active');
+  const resultCard=document.getElementById('resultCard');
+  if(!resultCard.classList.contains('hidden')){
+    calculate();
+  }
 }
 
 function cascoPlusBrutoMax(){
